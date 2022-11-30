@@ -7,7 +7,15 @@ public class Kurs {
 	private String nazwisko_prowadzacego;
 	private int ects;
 	
-	public Kurs(String nazwa,String imie_prowadzacego,String nazwisko_prowadzacego,int ects) {
+	public Kurs(String nazwa, int ects)
+	{
+		setNazwa(nazwa);
+		setEcts(ects);
+		setImie_prowadzacego("");
+		setNazwisko_prowadzacego("Nieprzydzielono prowadzącego");
+	}
+	
+ 	public Kurs(String nazwa,String imie_prowadzacego,String nazwisko_prowadzacego,int ects) {
 		setNazwa(nazwa);
 		setImie_prowadzacego(imie_prowadzacego);
 		setNazwisko_prowadzacego(nazwisko_prowadzacego);
@@ -48,7 +56,17 @@ public class Kurs {
 	
 	public String toString()
 	{
-		return nazwa+"   "+ects+" ECTS";
+		return nazwa+"  "+nazwisko_prowadzacego+"  "+ects+" ECTS";
+	}
+	
+	public boolean equals(Object o)
+	{
+		if(!(o instanceof Kurs))
+			return false;
+		if(((Kurs)o).getNazwa().equals(nazwa) && ((Kurs)o).getEcts()==ects &&((Kurs)o).getImie_prowadzacego().equals(imie_prowadzacego)&&((Kurs)o).getNazwisko_prowadzacego().equals(nazwisko_prowadzacego))
+			return true;
+		else 
+			return false;
 	}
 
 }

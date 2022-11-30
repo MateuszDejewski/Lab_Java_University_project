@@ -6,37 +6,49 @@ import klasy_definiujace.*;
 
 public class Wyszukiwanie_zajec {
 
-	public static ArrayList<Kurs> wyszukaj_kursy_po_nazwie(String nazwa, ArrayList<Kurs> wszystkie_kursy)
+	public static boolean warunki_kurs(String nazwa,String imie_prowadzącego,String nazwisko_prowadzacego,int ects_od,int ects_do, Kurs kurs )
 	{
-		ArrayList<Kurs> wynikowa=new ArrayList<Kurs>();
-		for(Kurs k:wszystkie_kursy)
-		{
-			if(k.getNazwa().equals(nazwa))
-				wynikowa.add(k);
-		}
-		return wynikowa;
+		if(nazwa!=null && !kurs.getNazwa().equals(nazwa))
+			return false;
+		if(imie_prowadzącego!=null && !kurs.getImie_prowadzacego().equals(imie_prowadzącego))
+			return false;
+		if(nazwisko_prowadzacego!=null && !kurs.getNazwisko_prowadzacego().equals(nazwisko_prowadzacego))
+			return false;
+		if( (ects_od!=-1 && kurs.getEcts()<ects_od) || (ects_do!=-1 && kurs.getEcts()>ects_do) )
+			return false;
+	
+		return true;
 	}
 	
-	public static ArrayList<Kurs> wyszukaj_kursy_po_prowadzacym(String imie_prowadzacego,String nazwisko_prowadzacego, ArrayList<Kurs> wszystkie_kursy)
-	{
-		ArrayList<Kurs> wynikowa=new ArrayList<Kurs>();
-		for(Kurs k:wszystkie_kursy)
-		{
-			if(k.getImie_prowadzacego().equals(imie_prowadzacego)&&k.getNazwisko_prowadzacego().equals(nazwisko_prowadzacego))
-				wynikowa.add(k);
-		}
-		return wynikowa;
-	}
-	
-	public static ArrayList<Kurs> wyszukaj_kursy_po_ECTS(int ects_od,int ects_do ,ArrayList<Kurs> kursy)
+	public static ArrayList<Kurs> wyszukaj_kurs_po_parametrach (String nazwa,String imie_prowadzącego,String nazwisko_prowadzacego,int ects_od,int ects_do,ArrayList<Kurs> kursy)
 	{
 		ArrayList<Kurs> lista_wynikowa=new ArrayList<Kurs>();
 		for(Kurs k:kursy)
 		{
-			if(k.getEcts()>=ects_od && k.getEcts()<=ects_do)
+			if(warunki_kurs(nazwa, imie_prowadzącego, nazwisko_prowadzacego, ects_od, ects_do, k))
 				lista_wynikowa.add(k);
 		}
 		return lista_wynikowa;
 	}
 	
+	
+	public static ArrayList<Kurs> wyszukaj_kursy_po_nazwie(String nazwa, ArrayList<Kurs> wszystkie_kursy)
+	{
+		return wyszukaj_kurs_po_parametrach(nazwa, null, null, -1, -1, wszystkie_kursy);
+	}
+	
+	public static ArrayList<Kurs> wyszukaj_kursy_po_prowadzacym(String imie_prowadzacego,String nazwisko_prowadzacego, ArrayList<Kurs> wszystkie_kursy)
+	{
+		return wyszukaj_kurs_po_parametrach(null, imie_prowadzacego, nazwisko_prowadzacego, -1, -1, wszystkie_kursy);
+	}
+	
+	public static ArrayList<Kurs> wyszukaj_kursy_po_ECTS(int ects_od,int ects_do ,ArrayList<Kurs> wszystkie_kursy)
+	{
+		return wyszukaj_kurs_po_parametrach(null, null, null, ects_od, ects_do, wszystkie_kursy);
+	}
+
+	public static void wypisz_kursy(ArrayList<Kurs> kursy)
+	{
+			kursy.forEach((n)->System.out.println(n.toString()));	
+	}
 }

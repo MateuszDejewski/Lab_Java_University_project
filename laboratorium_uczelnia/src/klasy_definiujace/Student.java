@@ -13,6 +13,21 @@ public class Student extends Osoba{
 	private boolean stacjonarne;
 	private boolean niestacjonarne;
 	
+	public Student(String imie,String nazwisko,String pesel,int wiek,char plec,String numer_indeksu,int rok_studiow)
+	{
+		super(imie, nazwisko, pesel, wiek, plec);
+		setNumer_indeksu(numer_indeksu);
+		setRok_studiow(rok_studiow);
+		setErasmus(false);
+		setI_stopien(true);
+		setII_stopien(false);
+		setStacjonarne(true);
+		setNiestacjonarne(false);
+		kursy=new ArrayList<Kurs>();
+		
+		
+	}
+	
 	public Student(String imie,String nazwisko,String pesel,int wiek,char plec,String numer_indeksu,int rok_studiow,boolean erasmus,boolean stopien,boolean stacjonarne) {
 		super(imie, nazwisko, pesel, wiek, plec);
 		setNumer_indeksu(numer_indeksu);
