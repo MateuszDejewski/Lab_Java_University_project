@@ -1,16 +1,18 @@
 package main;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import klasy_definiujace.*;
 import klasy_wyszukujace.*;
 
-public class Main {
+public class Uczelnia implements Serializable {
 	
+	private static final long serialVersionUID = -727997828775802223L;
 	private ArrayList<Osoba> ludzie;
 	private ArrayList<Kurs> wszystkie_kursy;
 	
-	public Main() {
+	public Uczelnia() {
 		setLudzie(new ArrayList<Osoba>());
 		setWszystkie_kursy(new ArrayList<Kurs>());
 	}
@@ -43,7 +45,14 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-		Main test= new Main();
+		Uczelnia uczelnia=new Uczelnia();
+		Komunikacja_z_uzytkownikiem komunikator=new Komunikacja_z_uzytkownikiem(uczelnia);
+		komunikator.menu();
+		
+		/*
+		Test funkcjonalności zaliczenie listy 5
+		
+		Uczelnia test= new Uczelnia();
 		Random_objects generator_danych=new Random_objects();
 		for(int i=0;i<3;i++)
 		{
@@ -57,6 +66,9 @@ public class Main {
 				test.getWszystkie_kursy().add(kurs);
 			}
 		}
+		
+		
+		
 		System.out.println("Wszystkie osoby: ");
 		Wyszukiwanie_osob.wypisz_osoby(test.getLudzie());
 		
@@ -77,6 +89,6 @@ public class Main {
 	
 		System.out.println("\n\nWyniki wyszukiwania kursów za 4-6 ECTS: ");
 		Wyszukiwanie_zajec.wypisz_kursy(Wyszukiwanie_zajec.wyszukaj_kursy_po_ECTS(4, 6, test.getWszystkie_kursy()));
-	
+		*/
 	}
 }

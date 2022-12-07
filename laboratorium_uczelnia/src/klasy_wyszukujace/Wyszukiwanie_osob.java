@@ -42,6 +42,21 @@ public class Wyszukiwanie_osob {
 		return wyszukaj_osobe_po_parametrach(null, nazwisko, null, -1,-1, '-', osoby);
 	}
 	
+	public static ArrayList<Osoba> wyszukaj_osobe_po_pesel(String pesel,ArrayList<Osoba> osoby)
+	{
+		return wyszukaj_osobe_po_parametrach(null, null, pesel, -1,-1, '-', osoby);
+	}
+	
+	public static ArrayList<Osoba> wyszukaj_osobe_po_wieku(int wiek_od,int wiek_do,ArrayList<Osoba> osoby)
+	{
+		return wyszukaj_osobe_po_parametrach(null, null, null, wiek_od,wiek_do, '-', osoby);
+	}
+	
+	public static ArrayList<Osoba> wyszukaj_osobe_po_plci(char plec,ArrayList<Osoba> osoby)
+	{
+		return wyszukaj_osobe_po_parametrach(null, null, null, -1,-1, plec, osoby);
+	}
+	
 	
 	public static boolean warunki_pracownik_uczelni(String imie,String nazwisko,String stanowsiko,int staż_od,int staż_do ,int nadgodziny_od,int nadgodziny_do,double pensja_od,double pensja_do,Pracownik_uczelni osoba )
 	{
@@ -54,6 +69,8 @@ public class Wyszukiwanie_osob {
 		if( (staż_od!=-1 && osoba.getStaz_pracy()<staż_od) || (staż_do!=-1 && osoba.getStaz_pracy()>staż_do) )
 			return false;
 		if(osoba instanceof Pracownik_administracyjny && ( (nadgodziny_od!=-1 && ((Pracownik_administracyjny)osoba).getLiczba_nadgodzin()<nadgodziny_od) || (nadgodziny_do!=-1 && ((Pracownik_administracyjny)osoba).getLiczba_nadgodzin()>nadgodziny_do) ) )
+			return false;
+		if((nadgodziny_do!=-1 || nadgodziny_od!=-1) && !(osoba instanceof Pracownik_administracyjny))
 			return false;
 		if( (pensja_od!=-1 && osoba.getPensja()<pensja_od) || (pensja_do!=-1 && osoba.getPensja()>pensja_do) )
 			return false;
@@ -207,26 +224,36 @@ public class Wyszukiwanie_osob {
 	public static void wypisz_osoby(ArrayList<Osoba> osoby)
 	{
 		osoby.forEach((n)->System.out.println(n.toString()));
+		if(osoby.isEmpty())
+			System.out.println("Brak rekordów spełniających kryteria");
 	}
 	
 	public static void wypisz_pracownikow(ArrayList<Pracownik_uczelni> osoby)
 	{
 		osoby.forEach((n)->System.out.println(n.toString()));
+		if(osoby.isEmpty())
+			System.out.println("Brak rekordów spełniających kryteria");
 	}
 	
 	public static void wypisz_pracownikow_administracyjnych(ArrayList<Pracownik_administracyjny> osoby)
 	{
 		osoby.forEach((n)->System.out.println(n.toString()));
+		if(osoby.isEmpty())
+			System.out.println("Brak rekordów spełniających kryteria");
 	}
 	
 	public static void wypisz_pracownikow_badawczo_dydaktycznych(ArrayList<Pracownik_Badawczo_Dydaktyczny> osoby)
 	{
 		osoby.forEach((n)->System.out.println(n.toString()));
+		if(osoby.isEmpty())
+			System.out.println("Brak rekordów spełniających kryteria");
 	}
 	
 	public static void wypisz_studentow(ArrayList<Student> osoby)
 	{
 		osoby.forEach((n)->System.out.println(n.toString()));
+		if(osoby.isEmpty())
+			System.out.println("Brak rekordów spełniających kryteria");
 	}
 	
 	

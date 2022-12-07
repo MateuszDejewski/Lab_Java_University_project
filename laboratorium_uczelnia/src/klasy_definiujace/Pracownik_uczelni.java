@@ -2,6 +2,7 @@ package klasy_definiujace;
 
 public abstract class Pracownik_uczelni extends Osoba{
 
+	private static final long serialVersionUID = -4498560201812862273L;
 	private String stanowisko;
 	private int staz_pracy;
 	private double pensja;

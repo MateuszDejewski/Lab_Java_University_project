@@ -1,7 +1,10 @@
 package klasy_definiujace;
 
-public abstract class Osoba {
+import java.io.Serializable;
 
+public abstract class Osoba implements Serializable{
+
+	private static final long serialVersionUID = -4557361733872384258L;
 	private String imie;
 	private String nazwisko;
 	private String pesel;

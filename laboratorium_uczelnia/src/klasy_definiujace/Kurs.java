@@ -1,7 +1,10 @@
 package klasy_definiujace;
 
-public class Kurs {
+import java.io.Serializable;
 
+public class Kurs implements Serializable {
+
+	private static final long serialVersionUID = -373668950553446565L;
 	private String nazwa;
 	private String imie_prowadzacego;
 	private String nazwisko_prowadzacego;
@@ -56,7 +59,7 @@ public class Kurs {
 	
 	public String toString()
 	{
-		return nazwa+"  "+nazwisko_prowadzacego+"  "+ects+" ECTS";
+		return nazwa+"  "+imie_prowadzacego+" "+nazwisko_prowadzacego+"  "+ects+" ECTS";
 	}
 	
 	public boolean equals(Object o)

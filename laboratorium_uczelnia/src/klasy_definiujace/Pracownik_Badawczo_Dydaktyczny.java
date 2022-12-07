@@ -2,7 +2,8 @@ package klasy_definiujace;
 
 public class Pracownik_Badawczo_Dydaktyczny extends Pracownik_uczelni {
 	
-	public static String[] mozliwe_stanowiska ={ "Asystent", "Adiunkt", "Profesor Nadzwyczajny", "Profesor Zwyczajny", "Wykładowca" };
+	private static final long serialVersionUID = -8699237165247498303L;
+	public static String[] mozliwe_stanowiska ={ "Asystent", "Adiunkt", "Profesor_Nadzwyczajny", "Profesor_Zwyczajny", "Wykładowca" };
 	private int liczba_publikacji;
 	
 	public Pracownik_Badawczo_Dydaktyczny(String imie,String nazwisko,String pesel,int wiek,char plec,String stanowisko,int staz_pracy,double pensja,int liczba_publikacji) {

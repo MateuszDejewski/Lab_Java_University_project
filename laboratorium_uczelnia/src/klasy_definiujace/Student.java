@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Student extends Osoba{
 
+	private static final long serialVersionUID = -5866679790393063287L;
 	private String numer_indeksu;
 	private int rok_studiow;
 	private ArrayList<Kurs> kursy;

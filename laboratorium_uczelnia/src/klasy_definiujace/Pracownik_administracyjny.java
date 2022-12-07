@@ -2,7 +2,8 @@ package klasy_definiujace;
 
 public class Pracownik_administracyjny extends Pracownik_uczelni {
 
-	public static String[] mozliwe_stanowiska= {"Referent", "Specjalista", "Starszy Specjalista"};
+	private static final long serialVersionUID = -2235723450099558515L;
+	public static String[] mozliwe_stanowiska= {"Referent", "Specjalista", "Starszy_Specjalista"};
 	private int liczba_nadgodzin;
 	
 	public Pracownik_administracyjny(String imie,String nazwisko,String pesel,int wiek,char plec,String stanowisko,int staz_pracy,double pensja,int liczba_nadgodzin) {
