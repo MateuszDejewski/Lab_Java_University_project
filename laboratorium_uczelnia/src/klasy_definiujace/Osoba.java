@@ -13,11 +13,11 @@ public abstract class Osoba implements Serializable{
 	
 	public Osoba(String imie,String nazwisko,String pesel,int wiek,char plec)
 	{
-		this.setImie(imie);
-		this.setNazwisko(nazwisko);
-		this.setPesel(pesel);
+		setImie(imie);
+		setNazwisko(nazwisko);
+		setPesel(pesel);
 		setWiek(wiek);
-		this.setPlec(plec);
+		setPlec(plec);
 	}
 
 	public int getWiek() {
@@ -33,8 +33,12 @@ public abstract class Osoba implements Serializable{
 		return pesel;
 	}
 
-	public void setPesel(String pesel) {
-		this.pesel = pesel;
+	public void setPesel(String pesel) throws IllegalArgumentException{
+		if(pesel.length()==11)
+			this.pesel = pesel;
+		else {
+			throw new IllegalArgumentException("pesel");
+		}
 	}
 
 	public String getImie() {
@@ -57,8 +61,13 @@ public abstract class Osoba implements Serializable{
 		return plec;
 	}
 
-	public void setPlec(char plec) {
-		this.plec = plec;
+	public void setPlec(char plec) throws IllegalArgumentException{
+		if(plec=='k' || plec=='K')
+			this.plec = 'K';
+		if(plec=='m'|| plec=='M')
+			this.plec='M';
+		if(plec!='k'&&plec!='K'&&plec!='m'&&plec!='M')
+			throw new IllegalArgumentException("plec");
 	}
 	
 	public boolean equals (Object o)

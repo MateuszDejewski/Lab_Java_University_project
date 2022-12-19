@@ -3,26 +3,63 @@ package main;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import klasy_definiujace.*;
-import klasy_wyszukujace.*;
 
-public class Uczelnia implements Serializable {
+import klasy_definiujace.*;
+import obserwator.Observable;
+import obserwator.Observer;
+
+public class Uczelnia implements Serializable, Observable  {
 	
-	private static final long serialVersionUID = -727997828775802223L;
+	private static final long serialVersionUID = -5635913568749821695L;
+
+	transient private ArrayList<Observer> obserwatorzy;
+	
 	private ArrayList<Osoba> ludzie;
 	private ArrayList<Kurs> wszystkie_kursy;
+	private int liczba_sal=1;
 	
 	public Uczelnia() {
 		setLudzie(new ArrayList<Osoba>());
 		setWszystkie_kursy(new ArrayList<Kurs>());
+		setObserwatorzy(new ArrayList<Observer>());
 	}
 	
+	public Uczelnia(int liczba_sal)
+	{
+		setLudzie(new ArrayList<Osoba>());
+		setWszystkie_kursy(new ArrayList<Kurs>());
+		setLiczba_sal(liczba_sal);
+		setObserwatorzy(new ArrayList<Observer>());
+	}
+	
+	public int getLiczba_sal() {
+		return liczba_sal;
+	}
+
+	public void setLiczba_sal(int liczba_sal) {
+		if(liczba_sal>0)
+			{
+			this.liczba_sal = liczba_sal;
+			notifyObservers();
+			}
+		
+	}
+
+	public ArrayList<Observer> getObserwatorzy() {
+		return obserwatorzy;
+	}
+
+	public void setObserwatorzy(ArrayList<Observer> obserwatorzy) {
+		this.obserwatorzy = obserwatorzy;
+	}
+
 	public ArrayList<Osoba> getLudzie() {
 		return ludzie;
 	}
 
 	public void setLudzie(ArrayList<Osoba> ludzie) {
 		this.ludzie = ludzie;
+		notifyObservers();
 	}
 	
 	public ArrayList<Kurs> getWszystkie_kursy() {
@@ -31,41 +68,69 @@ public class Uczelnia implements Serializable {
 
 	public void setWszystkie_kursy(ArrayList<Kurs> wszystkie_kursy) {
 		this.wszystkie_kursy = wszystkie_kursy;
+		notifyObservers();
 	}
 	
 	public void dodaj_osobe(Osoba o)
 	{
-		getLudzie().add(o);
+		ludzie.add(o);
+		notifyObservers();
+	}
+	
+	public void usun_osobe(Osoba o)
+	{
+		ludzie.remove(o);
+		notifyObservers();
+	}
+	
+	public void usun_osoby(ArrayList<?> o)
+	{
+			ludzie.removeAll(o);
+			notifyObservers();
 	}
 	
 	public void dodaj_kurs(Kurs k)
 	{
-		getWszystkie_kursy().add(k);
+		wszystkie_kursy.add(k);
+		notifyObservers();
+	}
+	
+	public void usun_kurs(Kurs k)
+	{
+		wszystkie_kursy.remove(k);
+		notifyObservers();
+	}
+	
+	public void usun_kursy(ArrayList<Kurs> k)
+	{
+		wszystkie_kursy.removeAll(k);
+		notifyObservers();
 	}
 	
 	public static void main(String[] args) {
 		
-		Uczelnia uczelnia=new Uczelnia();
-		Komunikacja_z_uzytkownikiem komunikator=new Komunikacja_z_uzytkownikiem(uczelnia);
+		Uczelnia test= new Uczelnia(3);
+		Komunikacja_z_uzytkownikiem komunikator=new Komunikacja_z_uzytkownikiem(test);
 		komunikator.menu();
 		
 		/*
-		Test funkcjonalności zaliczenie listy 5
+		//Test funkcjonalności zaliczenie listy 5
 		
-		Uczelnia test= new Uczelnia();
-		Random_objects generator_danych=new Random_objects();
-		for(int i=0;i<3;i++)
+		
+		for(int i=0;i<7;i++)
 		{
-			test.dodaj_osobe(generator_danych.pracownik_administracyjny());
-			test.dodaj_osobe(generator_danych.pracownik_badawczo_dydaktyczny());
-			test.dodaj_osobe(generator_danych.student());
-			for(int j=0;j<3;j++) 
+			test.dodaj_osobe(Random_objects.pracownik_administracyjny());
+			test.dodaj_osobe(Random_objects.pracownik_badawczo_dydaktyczny());
+			test.dodaj_osobe(Random_objects.student());
+			for(int j=0;j<6;j++) 
 			{
-				Kurs kurs=generator_danych.kurs();
+				Kurs kurs=Random_objects.kurs();
 				((Student)test.getLudzie().get(test.getLudzie().size()-1)).add_kurs(kurs);
 				test.getWszystkie_kursy().add(kurs);
 			}
 		}
+		
+		
 		
 		
 		
@@ -90,5 +155,26 @@ public class Uczelnia implements Serializable {
 		System.out.println("\n\nWyniki wyszukiwania kursów za 4-6 ECTS: ");
 		Wyszukiwanie_zajec.wypisz_kursy(Wyszukiwanie_zajec.wyszukaj_kursy_po_ECTS(4, 6, test.getWszystkie_kursy()));
 		*/
+	}
+
+
+	@Override
+	public void notifyObservers() {
+		if (getObserwatorzy()!=null && !getObserwatorzy().isEmpty()) {
+			getObserwatorzy().forEach((n)-> n.update());
+		}
+		
+	}
+
+	@Override
+	public void addObserver(Observer o) {
+		getObserwatorzy().add(o);
+		
+	}
+
+	@Override
+	public void removeObserver(Observer o) {
+		getObserwatorzy().remove(o);
+		
 	}
 }

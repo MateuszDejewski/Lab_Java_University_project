@@ -49,8 +49,11 @@ public class Wyszukiwanie_zajec {
 
 	public static void wypisz_kursy(ArrayList<Kurs> kursy)
 	{
+		if(kursy!=null) {
 			kursy.forEach((n)->System.out.println(n.toString()));
 			if(kursy.isEmpty())
 				System.out.println("Brak rekordów spełniających kryteria");
+		}
+			
 	}
 }

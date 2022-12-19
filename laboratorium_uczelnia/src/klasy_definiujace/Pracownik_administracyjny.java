@@ -6,9 +6,13 @@ public class Pracownik_administracyjny extends Pracownik_uczelni {
 	public static String[] mozliwe_stanowiska= {"Referent", "Specjalista", "Starszy_Specjalista"};
 	private int liczba_nadgodzin;
 	
-	public Pracownik_administracyjny(String imie,String nazwisko,String pesel,int wiek,char plec,String stanowisko,int staz_pracy,double pensja,int liczba_nadgodzin) {
-		super(imie, nazwisko, pesel, wiek, plec, stanowisko, staz_pracy, pensja);
+	public Pracownik_administracyjny(String imie,String nazwisko,String pesel,int wiek,char plec,String stanowisko,int staz_pracy,double pensja,int liczba_nadgodzin) {	
+		super(imie, nazwisko, pesel, wiek, plec);
 		setLiczba_nadgodzin(liczba_nadgodzin);
+		Pracownik_uczelni.mozliwe_stanowiska=Pracownik_administracyjny.mozliwe_stanowiska;
+		setStanowisko(stanowisko);
+		setStaz_pracy(staz_pracy);
+		setPensja(pensja);
 	}
 	
 	public int getLiczba_nadgodzin() {

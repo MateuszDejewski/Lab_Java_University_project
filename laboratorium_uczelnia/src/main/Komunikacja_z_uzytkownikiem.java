@@ -3,25 +3,42 @@ package main;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
+
 import klasy_wyszukujace.*;
 import klasy_definiujace.*;
+import plan_zajec.*;
+import obserwator.*;
 
 public class Komunikacja_z_uzytkownikiem {
 	
 	Uczelnia uczelnia;
 	Scanner wczytaj=new Scanner(System.in);
-	
+	Ukladanie_planu ukladanie_planu;
 	public Komunikacja_z_uzytkownikiem(Uczelnia uczelnia) {
-		this.uczelnia=uczelnia;
+		przygotoj_do_dzialania(uczelnia);
 		System.out.println("Witaj w systemie zarządzania uczelnią");
+	}
+	
+	private void przygotoj_do_dzialania(Uczelnia uczelnia)
+	{
+		this.uczelnia=uczelnia;
+		this.ukladanie_planu=new Ukladanie_planu(this.uczelnia);
+		this.uczelnia.setObserwatorzy(new ArrayList<Observer>());
+		this.uczelnia.addObserver(ukladanie_planu);
+		this.uczelnia.addObserver(new Korektor_danych(uczelnia));
 	}
 	
 	public void menu()
 	{
 		System.out.println("*****MENU*****\nWybierz akcje:");
-		System.out.println(" 1: Dodaj dane\n 2: Wyszukaj\n 3: Zapisz stan\n 4: Odtwórz stan\n 5: Zamknij program");
+		System.out.println(" 0: Zamknij program\n 1: Dodaj dane\n 2: Wyszukaj\n 3: Zapisz stan\n 4: Odtwórz stan\n 5: Modyfikuj dane\n 6: Zarzadzaj planem zajec ");
 		int opcja=wczytaj.nextInt();
 		switch (opcja) {
+		case 0:
+		{
+			System.out.println("Dziękujemy za skorzystanie z systemu. Do zobaczenia!");
+			return;
+		}
 		case 1: {
 			dodaj_dane();
 			break;
@@ -38,10 +55,13 @@ public class Komunikacja_z_uzytkownikiem {
 			deserializuj();
 			break;
 		}
-		case 5:
-		{
-			System.out.println("Dziękujemy za skorzystanie z systemu. Do zobaczenia!");
-			return;
+		case 5:{
+			modyfikuj_dane();
+			break;
+		}
+		case 6:{
+			plan_zajec();
+			break;
 		}
 		default:{
 			System.out.println("Brak poprawnego wyboru funkcjonalności, wybierz jeszcze raz");
@@ -51,6 +71,7 @@ public class Komunikacja_z_uzytkownikiem {
 		//wczytaj.close();
 	
 	}
+	
 	
 	public void dodaj_dane()
 	{
@@ -117,10 +138,44 @@ public class Komunikacja_z_uzytkownikiem {
 				{
 				return;
 				}
-		}	
-	
-	uczelnia.dodaj_osobe(new Student(wczytaj.next(), wczytaj.next(),wczytaj.next(),wczytaj.nextInt(),((wczytaj.next().equals("kobieta"))?'K':'M'), wczytaj.next(), wczytaj.nextInt()));
-	System.out.println("Operacja zakończona, powrót do menu");
+		}
+		
+		String imie=wczytaj.next(),nazwisko=wczytaj.next(),pesel=wczytaj.next();
+		int wiek=wczytaj.nextInt();
+		char plec=wczytaj.next().charAt(0);
+		String numer_indeksu=wczytaj.next();
+		int rok=wczytaj.nextInt();
+		
+		try {
+			uczelnia.dodaj_osobe(new Student(imie, nazwisko,pesel,wiek,plec, numer_indeksu,rok));
+			System.out.println("Operacja zakończona, powrót do menu");
+		}catch (IllegalArgumentException e) {
+			
+			switch (e.getMessage()) {
+			case "pesel": {
+				System.out.println("Podaj poprawny pesel");
+				pesel=wczytaj.next();
+				break;
+			}
+			case "numer_indeksu":{
+				System.out.println("Podaj poprawny numer indeksu");
+				numer_indeksu=wczytaj.next();
+				break;
+			}
+			case "plec":{
+				System.out.println("Podaj poprawną płeć");
+				plec=wczytaj.next().charAt(0);
+				break;
+			}
+			}
+			
+			try {
+			uczelnia.dodaj_osobe(new Student(imie, nazwisko,pesel,wiek,plec, numer_indeksu,rok));
+			System.out.println("Operacja zakończona, powrót do menu");
+			}catch (IllegalArgumentException ex) {
+				System.out.println("Błędne dane");
+			}
+		}
 	}
 	
 	public void dodaj_pracownika_badawczo_dydaktycznego ()
@@ -134,10 +189,46 @@ public class Komunikacja_z_uzytkownikiem {
 				{
 				return;
 				}
-		}	
-	
-	uczelnia.dodaj_osobe(new Pracownik_Badawczo_Dydaktyczny(wczytaj.next(), wczytaj.next(),wczytaj.next(),wczytaj.nextInt(),((wczytaj.next().equals("kobieta"))?'K':'M'), wczytaj.next(), wczytaj.nextInt(),wczytaj.nextDouble(),wczytaj.nextInt()));
-	System.out.println("Operacja zakończona, powrót do menu");
+		}
+		
+		String imie=wczytaj.next(),nazwisko=wczytaj.next(),pesel=wczytaj.next();
+		int wiek=wczytaj.nextInt();
+		char plec=wczytaj.next().charAt(0);
+		String stanowisko=wczytaj.next();
+		int staz=wczytaj.nextInt();
+		double pensja=wczytaj.nextDouble();
+		int liczba_publikacji=wczytaj.nextInt();
+		
+		try {
+			uczelnia.dodaj_osobe(new Pracownik_Badawczo_Dydaktyczny(imie,nazwisko,pesel,wiek,plec, stanowisko, staz,pensja,liczba_publikacji));
+			System.out.println("Operacja zakończona, powrót do menu");
+		}catch (IllegalArgumentException e) {
+			
+			switch (e.getMessage()) {
+			case "pesel": {
+				System.out.println("Podaj poprawny pesel");
+				pesel=wczytaj.next();
+				break;
+			}
+			case "stanowisko":{
+				System.out.println("Podaj poprawne stanowisko");
+				stanowisko=wczytaj.next();
+				break;
+			}
+			case "plec":{
+				System.out.println("Podaj poprawną płeć");
+				plec=wczytaj.next().charAt(0);
+				break;
+			}
+			
+			}
+			try {
+			uczelnia.dodaj_osobe(new Pracownik_Badawczo_Dydaktyczny(imie,nazwisko,pesel,wiek,plec, stanowisko, staz,pensja,liczba_publikacji));
+			System.out.println("Operacja zakończona, powrót do menu");
+			}catch (IllegalArgumentException ex) {
+				System.out.println("Błędne dane");
+			}
+		}
 	}
 	
 	public void dodaj_pracownika_administracyjnego()
@@ -152,9 +243,46 @@ public class Komunikacja_z_uzytkownikiem {
 				return;
 				}
 		}	
-	
-	uczelnia.dodaj_osobe(new Pracownik_administracyjny(wczytaj.next(), wczytaj.next(),wczytaj.next(),wczytaj.nextInt(),((wczytaj.next().equals("kobieta"))?'K':'M'), wczytaj.next(), wczytaj.nextInt(),wczytaj.nextDouble(),wczytaj.nextInt()));
-	System.out.println("Operacja zakończona, powrót do menu");
+		
+		String imie=wczytaj.next(),nazwisko=wczytaj.next(),pesel=wczytaj.next();
+		int wiek=wczytaj.nextInt();
+		char plec=wczytaj.next().charAt(0);
+		String stanowisko=wczytaj.next();
+		int staz=wczytaj.nextInt();
+		double pensja=wczytaj.nextDouble();
+		int liczba_nadgodzin=wczytaj.nextInt();
+		
+		try {
+		uczelnia.dodaj_osobe(new Pracownik_administracyjny(imie, nazwisko, pesel, wiek, plec, stanowisko, staz, pensja, liczba_nadgodzin));
+		System.out.println("Operacja zakończona, powrót do menu");
+		}catch (IllegalArgumentException e) {
+			
+			switch (e.getMessage()) {
+			case "pesel": {
+				System.out.println("Podaj poprawny pesel");
+				pesel=wczytaj.next();
+				break;
+			}
+			case "stanowisko":{
+				System.out.println("Podaj poprawne stanowisko");
+				stanowisko=wczytaj.next();
+				break;
+			}
+			case "plec":{
+				System.out.println("Podaj poprawną płeć");
+				plec=wczytaj.next().charAt(0);
+				break;
+			}
+		
+			}
+			try {
+			uczelnia.dodaj_osobe(new Pracownik_administracyjny(imie, nazwisko, pesel, wiek, plec, stanowisko, staz, pensja, liczba_nadgodzin));
+			System.out.println("Operacja zakończona, powrót do menu");
+			}catch (IllegalArgumentException ex) {
+				System.out.println("Błędne dane");
+				ex.printStackTrace();
+			}
+		}
 	}
 	
 	public void przypisz_kurs()
@@ -194,6 +322,8 @@ public class Komunikacja_z_uzytkownikiem {
 		}
 	}
 	
+	
+
 	public void wyszukaj()
 	{
 		System.out.println("Wybierz typ danych który chcesz wyszukać: ");
@@ -201,19 +331,19 @@ public class Komunikacja_z_uzytkownikiem {
 		int opcja=wczytaj.nextInt();
 		switch (opcja) {
 		case 1: {
-			wyszukaj_osobe();
+			Wyszukiwanie_osob.wypisz(wyszukaj_osobe());
 			break;
 		}
 		case 2: {
-			wyszukaj_kurs();
+			Wyszukiwanie_zajec.wypisz_kursy(wyszukaj_kurs());
 			break;
 		}
 		case 3: {
-			wyszukaj_studenta();
+			Wyszukiwanie_osob.wypisz(wyszukaj_studenta());
 			break;
 		}
 		case 4: {
-			wyszukaj_pracownika();
+			Wyszukiwanie_osob.wypisz(wyszukaj_pracownika());
 			break;
 		}
 		case 0: {
@@ -221,12 +351,11 @@ public class Komunikacja_z_uzytkownikiem {
 		}
 		default:{
 			System.out.println("Brak poprawnego wyboru funkcjonalności, wybierz jeszcze raz");
-			dodaj_dane();
 		}
 		}
 	}
 	
-	public void wyszukaj_osobe()
+	public ArrayList<Osoba> wyszukaj_osobe()
 	{
 		System.out.println("Wybierz kryterium do wyszukiwania: ");
 		System.out.println(" 0: znajdz wszystkie osoby\n 1: imie\n 2: nazwisko\n 3: pesel\n 4: wiek (od do)\n 5: płeć\n 6: po wielu parametrach\n -1: Powróć do menu");
@@ -234,52 +363,53 @@ public class Komunikacja_z_uzytkownikiem {
 		switch (opcja) {
 		case 0: {
 			System.out.println("Wyszystkie osoby");
-			Wyszukiwanie_osob.wypisz_osoby(uczelnia.getLudzie());
-			break;
+			return uczelnia.getLudzie();
+			
 		}
 		case 1: {
 			System.out.println("Podaj imię:");
-			Wyszukiwanie_osob.wypisz_osoby(Wyszukiwanie_osob.wyszukaj_osobe_po_imieniu(wczytaj.next(), uczelnia.getLudzie()));
-			break;
+			return Wyszukiwanie_osob.wyszukaj_osobe_po_imieniu(wczytaj.next(), uczelnia.getLudzie());
+			
 		}
 		case 2: {
 			System.out.println("Podaj nazwisko:");
-			Wyszukiwanie_osob.wypisz_osoby(Wyszukiwanie_osob.wyszukaj_osobe_po_nazwisku(wczytaj.next(), uczelnia.getLudzie()));
-			break;
+			return Wyszukiwanie_osob.wyszukaj_osobe_po_nazwisku(wczytaj.next(), uczelnia.getLudzie());
+			
 		}
 		case 3: {
 			System.out.println("Podaj pesel:");
-			Wyszukiwanie_osob.wypisz_osoby(Wyszukiwanie_osob.wyszukaj_osobe_po_pesel(wczytaj.next(), uczelnia.getLudzie()));
-			break;
+			return Wyszukiwanie_osob.wyszukaj_osobe_po_pesel(wczytaj.next(), uczelnia.getLudzie());
+			
 		}
 		case 4: {
 			System.out.println("Podaj zakres wieku w formie ''x do y'' jeżeli chcesz pominąć kryterium wpisz -1");
 			int x=wczytaj.nextInt();
 			wczytaj.next();
 			int y=wczytaj.nextInt();
-			Wyszukiwanie_osob.wypisz_osoby(Wyszukiwanie_osob.wyszukaj_osobe_po_wieku(x,y, uczelnia.getLudzie()));;
-			break;
+			return Wyszukiwanie_osob.wyszukaj_osobe_po_wieku(x,y, uczelnia.getLudzie());
+			
 		}
 		case 5: {
 			System.out.println("Podaj płeć:");
-			Wyszukiwanie_osob.wypisz_osoby(Wyszukiwanie_osob.wyszukaj_osobe_po_plci(((wczytaj.next().equals("kobieta"))?'K':'M'), uczelnia.getLudzie()));
-			break;
+			return Wyszukiwanie_osob.wyszukaj_osobe_po_plci(((wczytaj.next().equals("kobieta"))?'K':'M'), uczelnia.getLudzie());
+			
 		}
 		case 6:{
-			osoba_parametry();
-			break;
+			return osoba_parametry();
 		}
 		case -1: {
-			return;
+			return null;
 		}
 		default:{
 			System.out.println("Brak poprawnego wyboru funkcjonalności, wybierz jeszcze raz");
 			dodaj_dane();
+			
 		}
 		}	
+	return null;
 	}
 
-	private void osoba_parametry()
+	private ArrayList<Osoba> osoba_parametry()
 	{
 		System.out.println("Podaj kryteria (pisane małymi literami) wyszukiwania w formie kryterium/wartość\nnp. wiek_do/40  nazwisko/Kowalski ciąg instrukcji zakończ 0");
 		String imieString=null,nazwiskoString=null,peselString=null;
@@ -326,53 +456,51 @@ public class Komunikacja_z_uzytkownikiem {
 		}
 	}
 		wczytaj.nextInt();
-		Wyszukiwanie_osob.wypisz_osoby(Wyszukiwanie_osob.wyszukaj_osobe_po_parametrach(imieString, nazwiskoString, peselString, wiek_od, wiek_do, plec, uczelnia.getLudzie()));
+		return Wyszukiwanie_osob.wyszukaj_osobe_po_parametrach(imieString, nazwiskoString, peselString, wiek_od, wiek_do, plec, uczelnia.getLudzie());
 		
 	}
 
-	public void wyszukaj_kurs()
+	public ArrayList<Kurs> wyszukaj_kurs()
 	{
 		System.out.println("Wybierz kryterium wyszukiwania: ");
 		System.out.println(" 0: znajdz wszystkie kursy\n 1: nazwa\n 2: imie i nazwisko prowadzącego\n 3: punkty ECTS (od do)\n 4: po wielu parametrach\n -1: Powróć do menu");
 		int opcja=wczytaj.nextInt();
 		switch (opcja) {
 		case 0: {
-			Wyszukiwanie_zajec.wypisz_kursy(uczelnia.getWszystkie_kursy());
-			break;
+			return uczelnia.getWszystkie_kursy();
+			
 		}
 		case 1:{
 			System.out.println("Podaj nazwę");
-			Wyszukiwanie_zajec.wypisz_kursy(Wyszukiwanie_zajec.wyszukaj_kursy_po_nazwie(wczytaj.next(), uczelnia.getWszystkie_kursy()));
-			break;
+			return Wyszukiwanie_zajec.wyszukaj_kursy_po_nazwie(wczytaj.next(), uczelnia.getWszystkie_kursy());
+			
 		}
 		case 2:{
 			System.out.println("Podaj imie i nazwisko prowdzącego");
-			Wyszukiwanie_zajec.wypisz_kursy(Wyszukiwanie_zajec.wyszukaj_kursy_po_prowadzacym(wczytaj.next(),wczytaj.next(), uczelnia.getWszystkie_kursy()));
-			break;
+			return Wyszukiwanie_zajec.wyszukaj_kursy_po_prowadzacym(wczytaj.next(),wczytaj.next(), uczelnia.getWszystkie_kursy());
 		}
 		case 3:{
 			System.out.println("Podaj zakres punktów ECTS w formie ''x do y'' jeżeli chcesz pominąć kryterium wpisz -1");
 			int x=wczytaj.nextInt();
 			wczytaj.next();
 			int y=wczytaj.nextInt();
-			Wyszukiwanie_zajec.wypisz_kursy(Wyszukiwanie_zajec.wyszukaj_kursy_po_ECTS(x, y, uczelnia.getWszystkie_kursy()));
-			break;
+			return Wyszukiwanie_zajec.wyszukaj_kursy_po_ECTS(x, y, uczelnia.getWszystkie_kursy());
 		}
 		case 4:{
-			kurs_parametry();
-			break;
+			return kurs_parametry();
 		}
 		case -1: {
-			return;
+			return null;
 		}
 		default:{
 			System.out.println("Brak poprawnego wyboru funkcjonalności, wybierz jeszcze raz");
 			dodaj_dane();
 		}
 		}
+		return null;
 	}
 	
-	private void kurs_parametry()
+	private ArrayList<Kurs> kurs_parametry()
 	{
 		System.out.println("Podaj kryteria (pisane małymi literami) wyszukiwania w formie kryterium/wartość\nnp. ects_do/8  nazwisko_prowadzącego/Kowalski ciąg instrukcji zakończ 0");
 		
@@ -411,11 +539,11 @@ public class Komunikacja_z_uzytkownikiem {
 		}
 	}
 		wczytaj.nextInt();
-		Wyszukiwanie_zajec.wypisz_kursy(Wyszukiwanie_zajec.wyszukaj_kurs_po_parametrach(nazwaString, imieString, nazwiskoString, ects_od, ects_do, uczelnia.getWszystkie_kursy()));
+		return Wyszukiwanie_zajec.wyszukaj_kurs_po_parametrach(nazwaString, imieString, nazwiskoString, ects_od, ects_do, uczelnia.getWszystkie_kursy());
 		
 	}
 	
-	public void wyszukaj_studenta()
+	public ArrayList<Student> wyszukaj_studenta()
 	{
 		System.out.println("Wybierz kryterium do wyszukiwania: ");
 		System.out.println(" 0: znajdz wszystkich studentów\n 1: imie\n 2: nazwisko\n 3: numer indeksu\n 4: rok studiów\n 5: kurs\n 6: po wielu parametrach\n -1: Powróć do menu");
@@ -423,52 +551,47 @@ public class Komunikacja_z_uzytkownikiem {
 		switch (opcja) {
 		case 0: {
 			System.out.println("Wyszyscy studenci");
-			Wyszukiwanie_osob.wypisz_studentow(Wyszukiwanie_osob.wyszukaj_wszystkich_studentow(uczelnia.getLudzie()));
-			
-			break;
+			return Wyszukiwanie_osob.wyszukaj_wszystkich_studentow(uczelnia.getLudzie());
 		}
 		case 1: {
 			System.out.println("Podaj imię:");
-			Wyszukiwanie_osob.wypisz_studentow(Wyszukiwanie_osob.wyszukaj_studenta_po_imieniu(wczytaj.next(), uczelnia.getLudzie()));
-			break;
+			return Wyszukiwanie_osob.wyszukaj_studenta_po_imieniu(wczytaj.next(), uczelnia.getLudzie());
+			
 		}
 		case 2: {
 			System.out.println("Podaj nazwisko:");
-			Wyszukiwanie_osob.wypisz_studentow(Wyszukiwanie_osob.wyszukaj_studenta_po_nazwisku(wczytaj.next(), uczelnia.getLudzie()));
-			break;
+			return Wyszukiwanie_osob.wyszukaj_studenta_po_nazwisku(wczytaj.next(), uczelnia.getLudzie());
 		}
 		case 3: {
 			System.out.println("Podaj numer indeksu:");
-			Wyszukiwanie_osob.wypisz_studentow(Wyszukiwanie_osob.wyszukaj_studenta_po_indeksie(wczytaj.next(), uczelnia.getLudzie()));
-			break;
+			return Wyszukiwanie_osob.wyszukaj_studenta_po_indeksie(wczytaj.next(), uczelnia.getLudzie());
 		}
 		case 4: {
 			System.out.println("Podaj rok studiów");
-			Wyszukiwanie_osob.wypisz_studentow(Wyszukiwanie_osob.wyszukaj_studenta_po_roku(wczytaj.nextInt(), uczelnia.getLudzie()));
-			break;
+			return Wyszukiwanie_osob.wyszukaj_studenta_po_roku(wczytaj.nextInt(), uczelnia.getLudzie());
+		
 		}
-		case 5: {
-			
+		case 5: {	
 			System.out.println("Podaj nazwę kursu, imię i nazwisko prowadzącego oraz liczbę punktow ects");
 			Kurs kurs=new Kurs(wczytaj.next(),wczytaj.next(),wczytaj.next(), wczytaj.nextInt());
-			Wyszukiwanie_osob.wypisz_studentow(Wyszukiwanie_osob.wyszukaj_studenta_po_kursie(kurs, uczelnia.getLudzie()));
-			break;
+			return Wyszukiwanie_osob.wyszukaj_studenta_po_kursie(kurs, uczelnia.getLudzie());
 		}
 		case 6:{
-			student_parametry();
-			break;
+			return student_parametry();
+			
 		}
 		case -1: {
-			return;
+			return null;
 		}
 		default:{
 			System.out.println("Brak poprawnego wyboru funkcjonalności, wybierz jeszcze raz");
 			dodaj_dane();
 		}
 		}
+		return null;
 	}
 	
-	private void student_parametry()
+	private ArrayList<Student> student_parametry()
 	{
 		System.out.println("Podaj kryteria (pisane małymi literami) wyszukiwania w formie kryterium/wartość\nnp. rok/2  nazwisko/Kowalski ciąg instrukcji zakończ 0");
 		String imieString=null,nazwiskoString=null;
@@ -498,85 +621,82 @@ public class Komunikacja_z_uzytkownikiem {
 		}
 	}
 		wczytaj.nextInt();
-		Wyszukiwanie_osob.wypisz_studentow(Wyszukiwanie_osob.wyszukaj_studenta_po_parametrach(imieString, nazwiskoString, null,rok, uczelnia.getLudzie()));
+		return Wyszukiwanie_osob.wyszukaj_studenta_po_parametrach(imieString, nazwiskoString, null,rok, uczelnia.getLudzie());
 		
 	}
 	
-	public void wyszukaj_pracownika()
+	public ArrayList<Pracownik_uczelni> wyszukaj_pracownika()
 	{
 		System.out.println("Wybierz kryterium do wyszukiwania: ");
-		System.out.println(" 0: znajdz wszystkich pracownikow\n 1:znajdz wszystkich pracownikow badawczo-dydaktycznych\n 2:znajdz wszystkich pracownikow administracyjnych\n 3: imie\n 4: nazwisko\n 5: stanowisko\n 6: staż(od do)\n 7: nadgodziny(od do)\n 8: pensja(od do)\n 9: po wielu parametrach\n -1: Powróć do menu");
+		System.out.println(" 0: znajdz wszystkich pracownikow\n 1: znajdz wszystkich pracownikow badawczo-dydaktycznych\n 2: znajdz wszystkich pracownikow administracyjnych\n 3: imie\n 4: nazwisko\n 5: stanowisko\n 6: staż(od do)\n 7: nadgodziny(od do)\n 8: pensja(od do)\n 9: po wielu parametrach\n -1: Powróć do menu");
 		int opcja=wczytaj.nextInt();
 		switch (opcja) {
 		case 0: {
 			System.out.println("Wyszyscy pracownicy");
-			Wyszukiwanie_osob.wypisz_pracownikow(Wyszukiwanie_osob.wyszukaj_wszystkich_pracownikow(uczelnia.getLudzie()));
-			break;
+			return Wyszukiwanie_osob.wyszukaj_wszystkich_pracownikow(uczelnia.getLudzie());
+			
 		}
 		case 1: {
 			System.out.println("Wyszyscy pracownicy badawczo-dydaktyczni");
-			Wyszukiwanie_osob.wypisz_pracownikow_badawczo_dydaktycznych(Wyszukiwanie_osob.wyszukaj_wszystkich_pracownikow_badawczo_dydaktycznych(uczelnia.getLudzie()));
-			break;
+			ArrayList<?> wynik = (ArrayList<?>) Wyszukiwanie_osob.wyszukaj_wszystkich_pracownikow_badawczo_dydaktycznych(uczelnia.getLudzie());
+			ArrayList<Pracownik_uczelni> pracownicy = (ArrayList<Pracownik_uczelni>) wynik;
+			return pracownicy;
 		}
 		case 2: {
 			System.out.println("Wyszyscy pracownicy administracyjni");
-			Wyszukiwanie_osob.wypisz_pracownikow_administracyjnych(Wyszukiwanie_osob.wyszukaj_wszystkich_pracownikow_administacyjnych(uczelnia.getLudzie()));
-			break;
+			Wyszukiwanie_osob.wypisz(Wyszukiwanie_osob.wyszukaj_wszystkich_pracownikow_administacyjnych(uczelnia.getLudzie()));
+			ArrayList<?> wynik = (ArrayList<?>) Wyszukiwanie_osob.wyszukaj_wszystkich_pracownikow_badawczo_dydaktycznych(uczelnia.getLudzie());
+			ArrayList<Pracownik_uczelni> pracownicy = (ArrayList<Pracownik_uczelni>) wynik;
+			return pracownicy;
 		}
 		case 3: {
 			System.out.println("Podaj imię:");
-			Wyszukiwanie_osob.wypisz_osoby(Wyszukiwanie_osob.wyszukaj_osobe_po_imieniu(wczytaj.next(), uczelnia.getLudzie()));
-			break;
+			return Wyszukiwanie_osob.wyszukaj_pracownika_po_imieniu(wczytaj.next(), uczelnia.getLudzie());
 		}
 		case 4: {
 			System.out.println("Podaj nazwisko:");
-			Wyszukiwanie_osob.wypisz_osoby(Wyszukiwanie_osob.wyszukaj_osobe_po_nazwisku(wczytaj.next(), uczelnia.getLudzie()));
-			break;
+			return Wyszukiwanie_osob.wyszukaj_pracownika_po_nazwisku(wczytaj.next(), uczelnia.getLudzie());
 		}
 		case 5: {
 			System.out.println("Podaj stanowisko:");
-			Wyszukiwanie_osob.wypisz_pracownikow(Wyszukiwanie_osob.wyszukaj_pracownika_po_stanowisku(wczytaj.next(), uczelnia.getLudzie()));
-			break;
+			return Wyszukiwanie_osob.wyszukaj_pracownika_po_stanowisku(wczytaj.next(), uczelnia.getLudzie());
 		}
 		case 6: {
 			System.out.println("Podaj zakres stażu w formie ''x do y'' jeżeli chcesz pominąć kryterium wpisz -1");
 			int x=wczytaj.nextInt();
 			wczytaj.next();
 			int y=wczytaj.nextInt();
-			Wyszukiwanie_osob.wypisz_pracownikow(Wyszukiwanie_osob.wyszukaj_pracownika_po_stażu(x,y, uczelnia.getLudzie()));;
-			break;
+			return Wyszukiwanie_osob.wyszukaj_pracownika_po_stażu(x,y, uczelnia.getLudzie());
 		}
 		case 7: {
 			System.out.println("Podaj zakres nadgodzin w formie ''x do y'' jeżeli chcesz pominąć kryterium wpisz -1");
 			int x=wczytaj.nextInt();
 			wczytaj.next();
 			int y=wczytaj.nextInt();
-			Wyszukiwanie_osob.wypisz_pracownikow(Wyszukiwanie_osob.wyszukaj_pracownika_po_nadgodzinach(x,y, uczelnia.getLudzie()));;
-			break;
+			return Wyszukiwanie_osob.wyszukaj_pracownika_po_nadgodzinach(x,y, uczelnia.getLudzie());
 		}
 		case 8: {
 			System.out.println("Podaj zakres pensji w formie ''x do y'' jeżeli chcesz pominąć kryterium wpisz -1");
 			double x=wczytaj.nextDouble();
 			wczytaj.next();
 			double y=wczytaj.nextDouble();
-			Wyszukiwanie_osob.wypisz_pracownikow(Wyszukiwanie_osob.wyszukaj_pracownika_po_pensji(x,y, uczelnia.getLudzie()));;
-			break;
+			return Wyszukiwanie_osob.wyszukaj_pracownika_po_pensji(x,y, uczelnia.getLudzie());
 		}
 		case 9:{
-			pracownik_parametry();
-			break;
+			return pracownik_parametry();
 		}
 		case -1: {
-			return;
+			return null;
 		}
 		default:{
 			System.out.println("Brak poprawnego wyboru funkcjonalności, wybierz jeszcze raz");
 			dodaj_dane();
 		}
 		}
+		return null;
 	}
 
-	private void pracownik_parametry()
+	private ArrayList<Pracownik_uczelni> pracownik_parametry()
 	{
 		System.out.println("Podaj kryteria (pisane małymi literami) wyszukiwania w formie kryterium/wartość\nnp. pensja_do/4528,45  nazwisko/Kowalski ciąg instrukcji zakończ 0");
 		String imieString=null,nazwiskoString=null,stanowiskoString=null;
@@ -631,9 +751,10 @@ public class Komunikacja_z_uzytkownikiem {
 		}
 	}
 		wczytaj.nextInt();
-		Wyszukiwanie_osob.wypisz_pracownikow(Wyszukiwanie_osob.wyszukaj_pracownika_po_parametrach(imieString, nazwiskoString, stanowiskoString, staz_od, staz_do, nadgodziny_od, nadgodziny_do, pensja_od, pensja_do, uczelnia.getLudzie()));
+		return Wyszukiwanie_osob.wyszukaj_pracownika_po_parametrach(imieString, nazwiskoString, stanowiskoString, staz_od, staz_do, nadgodziny_od, nadgodziny_do, pensja_od, pensja_do, uczelnia.getLudzie());
 		
 	}
+	
 	
 	public void serializuj()
 	{
@@ -644,8 +765,7 @@ public class Komunikacja_z_uzytkownikiem {
 		zapiszObjectOutputStream.writeObject(uczelnia);
 		System.out.println("Zapisano");
 		}catch (Exception e) {
-			System.out.println("Zapis nie powiódł się, spróbuj ponownie");
-			
+			System.out.println("Zapis nie powiódł się, spróbuj ponownie");			
 		}
 	}
 	
@@ -654,13 +774,120 @@ public class Komunikacja_z_uzytkownikiem {
 		System.out.println("Podaj nazwę pliku: ");
 		String nazwa=wczytaj.next();
 		nazwa+=".ser";
-		
 		try(ObjectInputStream wczytajInputStream=new ObjectInputStream(new FileInputStream(new File(nazwa)))){
 		Object object =wczytajInputStream.readObject();
-		uczelnia= (Uczelnia) object;
+		przygotoj_do_dzialania((Uczelnia) object);
 		System.out.println("Wczytano");
 		}catch (Exception e) {
 			System.out.println("Odczyt nie powiódł się,sprawdz nazwę pliku i spróbuj ponownie");
 		}
+	}
+
+	public void modyfikuj_dane()
+	{
+		System.out.println("Wybierz typ danych który chcesz wyszukać i usunąć: ");
+		System.out.println(" 1: Wyszukaj osobe\n 2: Wyszukaj kurs\n 3: Wyszukaj studenta\n 4: Wyszukaj pracownika\n 5: Zmień liczbę dostępnych sal\n 0: Powróć do menu");
+		int opcja=wczytaj.nextInt();
+		switch (opcja) {
+		case 1: {
+			ArrayList<Osoba> osoba=wyszukaj_osobe();
+			Wyszukiwanie_osob.wypisz(osoba);
+			if(osoba!=null) uczelnia.usun_osoby(osoba);
+			System.out.println("Usunięto powyższe rekordy");
+			break;
+		}
+		case 2: {
+			ArrayList <Kurs> kursy=wyszukaj_kurs();
+			Wyszukiwanie_zajec.wypisz_kursy(kursy);
+			if(kursy!=null) uczelnia.usun_kursy(kursy);
+			System.out.println("Usunięto powyższe rekordy");
+			break;
+		}
+		case 3: {
+			ArrayList<Student> osoba=wyszukaj_studenta();
+			Wyszukiwanie_osob.wypisz(osoba);
+			if(osoba!=null) uczelnia.usun_osoby(osoba);
+			System.out.println("Usunięto powyższe rekordy");
+			break;
+		}
+		case 4: {
+			ArrayList<Pracownik_uczelni> osoba=wyszukaj_pracownika();
+			Wyszukiwanie_osob.wypisz(osoba);
+			if(osoba!=null) uczelnia.usun_osoby(osoba);
+			System.out.println("Usunięto powyższe rekordy");
+			break;
+		}
+		case 5:{
+			System.out.println("Podaj nową liczbę sal");
+			uczelnia.setLiczba_sal(wczytaj.nextInt());
+			System.out.println("Aktualna liczba sal: "+uczelnia.getLiczba_sal());
+		}
+		case 0: {
+			return;
+		}
+		default:{
+			System.out.println("Brak poprawnego wyboru funkcjonalności, wybierz jeszcze raz");
+		}
+		}
+	}
+	
+	public void plan_zajec()
+	{
+		System.out.println("Wybierz akcje");
+		System.out.println(" 1: wypisz plany zajec\n 2: eksportuj plany zajec\n 3: wymus sposob ukladania planu zajec w czasie tej sesji\n 0: powroc do menu");
+		int opcja=wczytaj.nextInt();
+		switch (opcja) {
+		case 1: {
+			 ukladanie_planu.wypisz_plany(ukladanie_planu.uloz_plany());
+			break;
+		}
+		case 2: {
+			ukladanie_planu.eksportuj_plany(ukladanie_planu.uloz_plany());
+			System.out.println("Wyeksportowano do plików tekstowych");
+			break;
+		}
+		case 3: {
+			ustaw_sposob_planu();
+			break;
+		}
+		case 0:{
+			return;
+		}
+		default:
+			System.out.println("Brak poprawnego wyboru funkcjonalności, wybierz jeszcze raz");
+			plan_zajec();
+		}
+	}
+	
+	private void ustaw_sposob_planu()
+	{
+		System.out.println("Wybierz metode:");
+		System.out.println(" 1: po_kolei (ustawia zajęcia wypełniając sale od poniedziałku od 7)");
+		System.out.println(" 2: rownomiernie (ustawia zajęcia zaczynając od środka każdego dnia)");
+		System.out.println(" 3: 4-dniowy tydzien pracy (ustawia plan po kolei lub rownomiernie zostoawiając wybrany dzień wolnym)");
+		int opcja=wczytaj.nextInt();
+		switch (opcja) {
+		case 1: {
+			ukladanie_planu.setSposob(new Ukladanie_planu_po_kolei());
+			break;
+		}
+		case 2: {
+			ukladanie_planu.setSposob(new Ukladanie_planu_rownomiernie());
+			break;
+		}
+		case 3:{
+			System.out.println("Podaj sposob oraz numer dnia wolnego (licząc od poniedziałku 1)");
+			String sposob=wczytaj.next();
+			if(sposob.equals("po_kolei"))
+				ukladanie_planu.setSposob(new Ukladanie_planu_4dni(wczytaj.nextInt(),new Ukladanie_planu_po_kolei()));
+			if(sposob.equals("rownomiernie"))
+				ukladanie_planu.setSposob(new Ukladanie_planu_4dni(wczytaj.nextInt(),new Ukladanie_planu_rownomiernie()));
+			break;
+		}
+		default:
+			System.out.println("Brak poprawnego wyboru funkcjonalności, wybierz jeszcze raz");
+			plan_zajec();
+		}
+		
 	}
 }

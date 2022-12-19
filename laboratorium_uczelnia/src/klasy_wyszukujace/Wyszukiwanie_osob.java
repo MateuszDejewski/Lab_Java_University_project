@@ -220,41 +220,15 @@ public class Wyszukiwanie_osob {
 		return lista_wynikowa;
 	}
 	
-	
-	public static void wypisz_osoby(ArrayList<Osoba> osoby)
+	public static void wypisz(ArrayList<?> osoby)
 	{
-		osoby.forEach((n)->System.out.println(n.toString()));
-		if(osoby.isEmpty())
-			System.out.println("Brak rekordów spełniających kryteria");
+		if(osoby!=null&&osoby instanceof ArrayList<?>)
+		{
+			if(osoby.isEmpty()||osoby==null)
+				System.out.println("Brak rekordów spełniających kryteria");
+			else
+				osoby.forEach((n)->System.out.println(n.toString()));
+		}
+		
 	}
-	
-	public static void wypisz_pracownikow(ArrayList<Pracownik_uczelni> osoby)
-	{
-		osoby.forEach((n)->System.out.println(n.toString()));
-		if(osoby.isEmpty())
-			System.out.println("Brak rekordów spełniających kryteria");
-	}
-	
-	public static void wypisz_pracownikow_administracyjnych(ArrayList<Pracownik_administracyjny> osoby)
-	{
-		osoby.forEach((n)->System.out.println(n.toString()));
-		if(osoby.isEmpty())
-			System.out.println("Brak rekordów spełniających kryteria");
-	}
-	
-	public static void wypisz_pracownikow_badawczo_dydaktycznych(ArrayList<Pracownik_Badawczo_Dydaktyczny> osoby)
-	{
-		osoby.forEach((n)->System.out.println(n.toString()));
-		if(osoby.isEmpty())
-			System.out.println("Brak rekordów spełniających kryteria");
-	}
-	
-	public static void wypisz_studentow(ArrayList<Student> osoby)
-	{
-		osoby.forEach((n)->System.out.println(n.toString()));
-		if(osoby.isEmpty())
-			System.out.println("Brak rekordów spełniających kryteria");
-	}
-	
-	
 }

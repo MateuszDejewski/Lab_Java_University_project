@@ -8,8 +8,12 @@ public class Pracownik_Badawczo_Dydaktyczny extends Pracownik_uczelni {
 	
 	public Pracownik_Badawczo_Dydaktyczny(String imie,String nazwisko,String pesel,int wiek,char plec,String stanowisko,int staz_pracy,double pensja,int liczba_publikacji) {
 	
-			super(imie, nazwisko, pesel, wiek, plec, stanowisko, staz_pracy, pensja);
+			super(imie, nazwisko, pesel, wiek, plec);
 			setLiczba_publikacji(liczba_publikacji);
+			Pracownik_uczelni.mozliwe_stanowiska=Pracownik_Badawczo_Dydaktyczny.mozliwe_stanowiska;
+			setStanowisko(stanowisko);
+			setStaz_pracy(staz_pracy);
+			setPensja(pensja);
 	}
 	
 	public int getLiczba_publikacji() {
@@ -25,4 +29,5 @@ public class Pracownik_Badawczo_Dydaktyczny extends Pracownik_uczelni {
 		return "Pracownik badawczo-dydaktyczny:  "+super.toString()+liczba_publikacji+" publikacji naukowych";
 	}
 
+	
 }

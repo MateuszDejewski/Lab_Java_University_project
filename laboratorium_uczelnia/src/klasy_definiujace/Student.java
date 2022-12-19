@@ -45,8 +45,12 @@ public class Student extends Osoba{
 		return numer_indeksu;
 	}
 
-	public void setNumer_indeksu(String numer_indeksu) {
-		this.numer_indeksu = numer_indeksu;
+	public void setNumer_indeksu(String numer_indeksu) throws IllegalArgumentException {
+		if(numer_indeksu.length()==6)
+			this.numer_indeksu = numer_indeksu;
+		else {
+			throw new IllegalArgumentException("numer_indeksu");
+		}
 	}
 
 	public int getRok_studiow() {
