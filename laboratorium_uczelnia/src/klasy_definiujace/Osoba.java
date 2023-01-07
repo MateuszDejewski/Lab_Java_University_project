@@ -24,9 +24,12 @@ public abstract class Osoba implements Serializable{
 		return wiek;
 	}
 
-	public void setWiek(int wiek) {
+	public void setWiek(int wiek) throws IllegalArgumentException {
 		if(wiek>0)
 			this.wiek = wiek;
+		else 
+			throw new IllegalArgumentException("wiek");
+		
 	}
 
 	public String getPesel() {
@@ -62,12 +65,13 @@ public abstract class Osoba implements Serializable{
 	}
 
 	public void setPlec(char plec) throws IllegalArgumentException{
+		if(plec!='k'&&plec!='K'&&plec!='m'&&plec!='M')
+			throw new IllegalArgumentException("plec");
 		if(plec=='k' || plec=='K')
 			this.plec = 'K';
 		if(plec=='m'|| plec=='M')
 			this.plec='M';
-		if(plec!='k'&&plec!='K'&&plec!='m'&&plec!='M')
-			throw new IllegalArgumentException("plec");
+		
 	}
 	
 	public boolean equals (Object o)

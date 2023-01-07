@@ -3,7 +3,7 @@ package main;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-
+import gui.GUI_menu;
 import klasy_definiujace.*;
 import obserwator.Observable;
 import obserwator.Observer;
@@ -58,8 +58,10 @@ public class Uczelnia implements Serializable, Observable  {
 	}
 
 	public void setLudzie(ArrayList<Osoba> ludzie) {
+		if(ludzie!=null) {
 		this.ludzie = ludzie;
 		notifyObservers();
+		}
 	}
 	
 	public ArrayList<Kurs> getWszystkie_kursy() {
@@ -67,55 +69,67 @@ public class Uczelnia implements Serializable, Observable  {
 	}
 
 	public void setWszystkie_kursy(ArrayList<Kurs> wszystkie_kursy) {
+		if(wszystkie_kursy!=null) {
 		this.wszystkie_kursy = wszystkie_kursy;
 		notifyObservers();
+		}
 	}
 	
 	public void dodaj_osobe(Osoba o)
 	{
+		if(o!=null) {
 		ludzie.add(o);
 		notifyObservers();
+		}
 	}
 	
 	public void usun_osobe(Osoba o)
 	{
+		if(o!=null) {
 		ludzie.remove(o);
 		notifyObservers();
+		}
 	}
 	
-	public void usun_osoby(ArrayList<?> o)
+	public void usun_osoby(ArrayList<Osoba> o)
 	{
-			ludzie.removeAll(o);
-			notifyObservers();
+		if(o!=null)	{
+		ludzie.removeAll(o);
+		notifyObservers();
+		}
 	}
 	
 	public void dodaj_kurs(Kurs k)
 	{
+		if(k!=null) {
 		wszystkie_kursy.add(k);
 		notifyObservers();
+		}
 	}
 	
 	public void usun_kurs(Kurs k)
 	{
+		if(k!=null) {
 		wszystkie_kursy.remove(k);
 		notifyObservers();
+		}
 	}
 	
 	public void usun_kursy(ArrayList<Kurs> k)
 	{
+		if(k!=null) {
 		wszystkie_kursy.removeAll(k);
 		notifyObservers();
+		}
 	}
 	
 	public static void main(String[] args) {
 		
 		Uczelnia test= new Uczelnia(3);
-		Komunikacja_z_uzytkownikiem komunikator=new Komunikacja_z_uzytkownikiem(test);
-		komunikator.menu();
+		GUI_menu gui=new GUI_menu(test);
+		gui.utworz();
 		
 		/*
-		//Test funkcjonalności zaliczenie listy 5
-		
 		
 		for(int i=0;i<7;i++)
 		{
@@ -129,32 +143,16 @@ public class Uczelnia implements Serializable, Observable  {
 				test.getWszystkie_kursy().add(kurs);
 			}
 		}
+		Komunikacja_z_uzytkownikiem komunikator=new Komunikacja_z_uzytkownikiem(test);
+		komunikator.menu();
 		
 		
+		//Test funkcjonalności zaliczenie listy 5
 		
 		
-		
-		System.out.println("Wszystkie osoby: ");
-		Wyszukiwanie_osob.wypisz_osoby(test.getLudzie());
-		
-		System.out.println("\n\nWyniki wyszukiwania dla nazwiska Żelwetro: ");
-		Wyszukiwanie_osob.wypisz_osoby(Wyszukiwanie_osob.wyszukaj_osobe_po_nazwisku("Żelwetro", test.getLudzie()));
-		
-		System.out.println("\n\nWyniki wyszukiwania procowników z conajmniej 10 letnim stażem: ");
-		Wyszukiwanie_osob.wypisz_pracownikow(Wyszukiwanie_osob.wyszukaj_pracownika_po_stażu(10, 100, test.getLudzie()));
-		
-		System.out.println("\n\nWyniki wyszukiwania procowników z pensją z przedziału 5000 - 8000zł : ");
-		Wyszukiwanie_osob.wypisz_pracownikow(Wyszukiwanie_osob.wyszukaj_pracownika_po_pensji(5000, 8000, test.getLudzie()));
-		
-		System.out.println("\n\nWyniki wyszukiwania studentów 1 roku: ");
-		Wyszukiwanie_osob.wypisz_studentow(Wyszukiwanie_osob.wyszukaj_studenta_po_roku(1, test.getLudzie()));
-		
-		System.out.printf("\n\nWyniki wyszukiwania studentów zapisanych na %s: \n",test.getWszystkie_kursy().get(0).toString());
-		Wyszukiwanie_osob.wypisz_studentow(Wyszukiwanie_osob.wyszukaj_studenta_po_kursie(test.getWszystkie_kursy().get(0), test.getLudzie()));
 	
-		System.out.println("\n\nWyniki wyszukiwania kursów za 4-6 ECTS: ");
-		Wyszukiwanie_zajec.wypisz_kursy(Wyszukiwanie_zajec.wyszukaj_kursy_po_ECTS(4, 6, test.getWszystkie_kursy()));
 		*/
+
 	}
 
 

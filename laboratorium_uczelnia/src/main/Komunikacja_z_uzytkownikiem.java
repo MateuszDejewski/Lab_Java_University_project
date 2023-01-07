@@ -2,11 +2,14 @@ package main;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Scanner;
 
 import klasy_wyszukujace.*;
 import klasy_definiujace.*;
 import plan_zajec.*;
+import sortowanie.*;
 import obserwator.*;
 
 public class Komunikacja_z_uzytkownikiem {
@@ -14,6 +17,9 @@ public class Komunikacja_z_uzytkownikiem {
 	Uczelnia uczelnia;
 	Scanner wczytaj=new Scanner(System.in);
 	Ukladanie_planu ukladanie_planu;
+	Comparator<Osoba> sposob_wypisywania_osob;
+	Comparator<Kurs> sposob_wypisywania_kursow;
+	
 	public Komunikacja_z_uzytkownikiem(Uczelnia uczelnia) {
 		przygotoj_do_dzialania(uczelnia);
 		System.out.println("Witaj w systemie zarządzania uczelnią");
@@ -26,17 +32,21 @@ public class Komunikacja_z_uzytkownikiem {
 		this.uczelnia.setObserwatorzy(new ArrayList<Observer>());
 		this.uczelnia.addObserver(ukladanie_planu);
 		this.uczelnia.addObserver(new Korektor_danych(uczelnia));
+		this.sposob_wypisywania_osob =new Sort_by_surname();
+		this.sposob_wypisywania_kursow=new Sort_by_ECTS_and_surname();
 	}
 	
 	public void menu()
 	{
 		System.out.println("*****MENU*****\nWybierz akcje:");
-		System.out.println(" 0: Zamknij program\n 1: Dodaj dane\n 2: Wyszukaj\n 3: Zapisz stan\n 4: Odtwórz stan\n 5: Modyfikuj dane\n 6: Zarzadzaj planem zajec ");
+		System.out.println(" 0: Zamknij program\n 1: Dodaj dane\n 2: Modyfikuj dane\n 3: Zapisz stan\n 4: Odtwórz stan\n 5: Wyszukaj\n 6: Zarzadzaj planem zajec ");
+		
 		int opcja=wczytaj.nextInt();
 		switch (opcja) {
 		case 0:
 		{
 			System.out.println("Dziękujemy za skorzystanie z systemu. Do zobaczenia!");
+			wczytaj.close();
 			return;
 		}
 		case 1: {
@@ -44,7 +54,7 @@ public class Komunikacja_z_uzytkownikiem {
 			break;
 		}
 		case 2: {
-			wyszukaj();
+			modyfikuj_dane();
 			break;
 		}
 		case 3: {
@@ -56,7 +66,7 @@ public class Komunikacja_z_uzytkownikiem {
 			break;
 		}
 		case 5:{
-			modyfikuj_dane();
+			wyszukaj();
 			break;
 		}
 		case 6:{
@@ -67,8 +77,8 @@ public class Komunikacja_z_uzytkownikiem {
 			System.out.println("Brak poprawnego wyboru funkcjonalności, wybierz jeszcze raz");
 			}
 		}
+		
 		menu();
-		//wczytaj.close();
 	
 	}
 	
@@ -121,10 +131,29 @@ public class Komunikacja_z_uzytkownikiem {
 				return;
 				}
 		}
-		
+	String nazwa=wczytaj.next(), imie=wczytaj.next(),nazwisko=wczytaj.next();
+	int ects=wczytaj.nextInt();
 	
-	uczelnia.dodaj_kurs(new Kurs(wczytaj.next(), wczytaj.next(),wczytaj.next(),wczytaj.nextInt()));
+	try {
+	uczelnia.dodaj_kurs(new Kurs(nazwa,imie,nazwisko,ects));
 	System.out.println("Operacja zakończona, powrót do menu");
+	}catch (IllegalArgumentException e)
+	{
+		switch (e.getMessage())	{	
+		case "ects": {
+			System.out.println("Podaj nieujemną liczbę punktow ECTS");
+			ects=wczytaj.nextInt();
+			break;
+			}
+		}		
+		try {
+		uczelnia.dodaj_kurs(new Kurs(nazwa,imie,nazwisko,ects));
+		System.out.println("Operacja zakończona, powrót do menu");
+		} catch (IllegalArgumentException e2) {
+			System.out.print("Błędne dane, powrot do menu");
+		}
+		
+	}
 	}
 	
 	public void dodaj_studenta()
@@ -327,24 +356,35 @@ public class Komunikacja_z_uzytkownikiem {
 	public void wyszukaj()
 	{
 		System.out.println("Wybierz typ danych który chcesz wyszukać: ");
-		System.out.println(" 1: Wyszukaj osobe\n 2: Wyszukaj kurs\n 3: Wyszukaj studenta\n 4: Wyszukaj pracownika\n 0: Powróć do menu");
+		System.out.println(" 1: Wyszukaj osobe\n 2: Wyszukaj kurs\n 3: Wyszukaj studenta\n 4: Wyszukaj pracownika\n 5: Wybierz sposob prezentacji danych\n 0: Powróć do menu");
 		int opcja=wczytaj.nextInt();
 		switch (opcja) {
 		case 1: {
-			Wyszukiwanie_osob.wypisz(wyszukaj_osobe());
+			ArrayList<Osoba> wynik=wyszukaj_osobe();
+			if(wynik!=null && sposob_wypisywania_osob!=null)	Collections.sort(wynik,sposob_wypisywania_osob);
+			Wyszukiwanie_osob.wypisz(wynik);
 			break;
 		}
 		case 2: {
-			Wyszukiwanie_zajec.wypisz_kursy(wyszukaj_kurs());
+			ArrayList<Kurs> wynik=wyszukaj_kurs();
+			if(wynik!=null && sposob_wypisywania_kursow!=null) Collections.sort(wynik,sposob_wypisywania_kursow);
+			Wyszukiwanie_zajec.wypisz_kursy(wynik);
 			break;
 		}
 		case 3: {
-			Wyszukiwanie_osob.wypisz(wyszukaj_studenta());
+			ArrayList<Student> wynik=wyszukaj_studenta();
+			if(wynik!=null && sposob_wypisywania_osob!=null) Collections.sort(wynik,sposob_wypisywania_osob);
+			Wyszukiwanie_osob.wypisz(wynik);
 			break;
 		}
 		case 4: {
-			Wyszukiwanie_osob.wypisz(wyszukaj_pracownika());
+			ArrayList<Pracownik_uczelni> wynik=wyszukaj_pracownika();
+			if(wynik!=null && sposob_wypisywania_osob!=null) Collections.sort(wynik,sposob_wypisywania_osob);
+			Wyszukiwanie_osob.wypisz(wynik);
 			break;
+		}
+		case 5: {
+			wybierz_sposob_prezentacji_danych();
 		}
 		case 0: {
 			return;
@@ -644,8 +684,7 @@ public class Komunikacja_z_uzytkownikiem {
 		}
 		case 2: {
 			System.out.println("Wyszyscy pracownicy administracyjni");
-			Wyszukiwanie_osob.wypisz(Wyszukiwanie_osob.wyszukaj_wszystkich_pracownikow_administacyjnych(uczelnia.getLudzie()));
-			ArrayList<?> wynik = (ArrayList<?>) Wyszukiwanie_osob.wyszukaj_wszystkich_pracownikow_badawczo_dydaktycznych(uczelnia.getLudzie());
+			ArrayList<?> wynik = (ArrayList<?>) Wyszukiwanie_osob.wyszukaj_wszystkich_pracownikow_administacyjnych(uczelnia.getLudzie());
 			ArrayList<Pracownik_uczelni> pracownicy = (ArrayList<Pracownik_uczelni>) wynik;
 			return pracownicy;
 		}
@@ -755,6 +794,62 @@ public class Komunikacja_z_uzytkownikiem {
 		
 	}
 	
+	public void wybierz_sposob_prezentacji_danych()
+	{
+		System.out.println("Wybierz sposob prezentacji danych:");
+		System.out.println("1: Domyślny(Lista osob posortowana po nazwisko,a kursow po punktach ECTS i nazwisku prowadzącego)");
+		System.out.println("2: Lista osob posortowana po nazwisku i imieniu");
+		System.out.println("3: Lista osob posortowana po nazwisku i wieku");
+		System.out.println("4: Lista kursow posortowana po punktach ECTS i nazwisku prowadzacego");
+		System.out.println("5: Lista kursow posortowana po punktach ECTS");
+		System.out.println("6: Lista kursow posortowana po nazwisku prowadzacego");
+		System.out.println("7: Wyświetl liste osob bez sortowanie");
+		System.out.println("8: Wyświetl liste kursow bez sortowania");
+		System.out.println("0: Powrot do menu");
+		
+		int opcja=wczytaj.nextInt();
+		switch (opcja) {
+		case 1: {
+			sposob_wypisywania_osob=new Sort_by_surname();
+			sposob_wypisywania_kursow=new Sort_by_ECTS_and_surname();
+			break;
+		}
+		case 2:{
+			sposob_wypisywania_osob=new Sort_by_surname_and_name();
+			break;
+		}
+		case 3:{
+			sposob_wypisywania_osob=new Sort_by_surname_and_age();
+			break;
+		}
+		case 4:{
+			sposob_wypisywania_kursow=new Sort_by_ECTS_and_surname();
+			break;
+		}
+		case 5:{
+			sposob_wypisywania_kursow=new Sort_by_ECTS();
+			break;
+		}
+		case 6:{
+			sposob_wypisywania_kursow=new Sort_by_lecturer();
+			break;
+		}
+		case 7:{
+			sposob_wypisywania_osob=null;
+			break;
+		}
+		case 8:{
+			sposob_wypisywania_kursow=null;
+			break;
+		}
+		case 0:{
+			return;
+		}
+		default:
+			System.out.println("Brak poprawnego wyboru funkcjonalności, wybierz jeszcze raz");
+		}
+	}
+	
 	
 	public void serializuj()
 	{
@@ -791,29 +886,33 @@ public class Komunikacja_z_uzytkownikiem {
 		switch (opcja) {
 		case 1: {
 			ArrayList<Osoba> osoba=wyszukaj_osobe();
+			uczelnia.usun_osoby(osoba);
+			if(osoba!=null && sposob_wypisywania_osob!=null) Collections.sort(osoba,sposob_wypisywania_osob);
 			Wyszukiwanie_osob.wypisz(osoba);
-			if(osoba!=null) uczelnia.usun_osoby(osoba);
 			System.out.println("Usunięto powyższe rekordy");
 			break;
 		}
 		case 2: {
 			ArrayList <Kurs> kursy=wyszukaj_kurs();
+			uczelnia.usun_kursy(kursy);
+			if(kursy!=null && sposob_wypisywania_kursow!=null) Collections.sort(kursy,sposob_wypisywania_kursow);
 			Wyszukiwanie_zajec.wypisz_kursy(kursy);
-			if(kursy!=null) uczelnia.usun_kursy(kursy);
 			System.out.println("Usunięto powyższe rekordy");
 			break;
 		}
 		case 3: {
 			ArrayList<Student> osoba=wyszukaj_studenta();
+			uczelnia.usun_osoby(((ArrayList<Osoba>)((ArrayList<?>)osoba)));
+			if(osoba!=null && sposob_wypisywania_osob!=null) Collections.sort(osoba,sposob_wypisywania_osob);
 			Wyszukiwanie_osob.wypisz(osoba);
-			if(osoba!=null) uczelnia.usun_osoby(osoba);
 			System.out.println("Usunięto powyższe rekordy");
 			break;
 		}
 		case 4: {
 			ArrayList<Pracownik_uczelni> osoba=wyszukaj_pracownika();
+			uczelnia.usun_osoby(((ArrayList<Osoba>)((ArrayList<?>)osoba)));
+			if(osoba!=null && sposob_wypisywania_osob!=null) Collections.sort(osoba,sposob_wypisywania_osob);
 			Wyszukiwanie_osob.wypisz(osoba);
-			if(osoba!=null) uczelnia.usun_osoby(osoba);
 			System.out.println("Usunięto powyższe rekordy");
 			break;
 		}

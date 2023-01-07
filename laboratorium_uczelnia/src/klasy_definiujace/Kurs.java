@@ -53,8 +53,12 @@ public class Kurs implements Serializable {
 		return ects;
 	}
 
-	public void setEcts(int ects) {
-		this.ects = ects;
+	public void setEcts(int ects) throws IllegalArgumentException {
+		if(ects>0)
+			this.ects = ects;
+		else {
+			throw new IllegalArgumentException("ects");
+		}
 	}
 	
 	public String toString()

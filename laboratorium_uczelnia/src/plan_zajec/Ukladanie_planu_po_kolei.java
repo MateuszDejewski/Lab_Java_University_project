@@ -1,13 +1,16 @@
 package plan_zajec;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import main.Uczelnia;
 import klasy_definiujace.*;
 
-public class Ukladanie_planu_po_kolei implements Sposob_ukladania_planu {
+public class Ukladanie_planu_po_kolei implements Sposob_ukladania_planu,Serializable {
 	
+	private static final long serialVersionUID = 9168366327863748784L;
+
 	public Ukladanie_planu_po_kolei() {
 		// TODO Auto-generated constructor stub
 	}
@@ -49,4 +52,17 @@ public class Ukladanie_planu_po_kolei implements Sposob_ukladania_planu {
 		return wynikowa;
 	}
 
+	public String toString()
+	{
+		return "Po kolei - zajecia sa ukladane zaczynajac od 7 od poniedzialku do 21 do piatku";
+	}
+	
+	public boolean equals(Object o)
+	{
+		if(o instanceof Ukladanie_planu_po_kolei)
+			return true;
+		else 
+			return false;	
+	}
+	
 }

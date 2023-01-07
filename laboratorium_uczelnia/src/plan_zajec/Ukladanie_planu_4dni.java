@@ -1,13 +1,15 @@
 package plan_zajec;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import klasy_definiujace.Kurs;
 import main.Uczelnia;
 
-public class Ukladanie_planu_4dni implements Sposob_ukladania_planu{
-
+public class Ukladanie_planu_4dni implements Sposob_ukladania_planu,Serializable{
+	
+	private static final long serialVersionUID = 9129322917239177904L;
 	private int dzien_wolny;
 	private Sposob_ukladania_planu sposob;
 	public Ukladanie_planu_4dni(int dzien_wolny, Sposob_ukladania_planu sposob) {
@@ -41,7 +43,7 @@ public class Ukladanie_planu_4dni implements Sposob_ukladania_planu{
 			wynikowa.add(uloz_plan(wszystkie_kursy.subList((i-1)*kursy_na_sale,i*kursy_na_sale), "Sala nr "+i));
 			
 		}
-		wynikowa.add(uloz_plan(wszystkie_kursy.subList(i*kursy_na_sale,wszystkie_kursy.size()), "Sala nr "+i));
+		wynikowa.add(uloz_plan(wszystkie_kursy.subList((i-1)*kursy_na_sale,wszystkie_kursy.size()), "Sala nr "+i));
 		return wynikowa;
 	}
 	
@@ -75,4 +77,19 @@ public class Ukladanie_planu_4dni implements Sposob_ukladania_planu{
 	return plan;
 	}
 	
+	public String toString()
+	{
+		return "4 dniowy tydzien pracy z wolnym dniem ("+new Plan("").getDnitygodnia()[dzien_wolny-1]+") ulozony sposobem: "+sposob.toString();
+	}
+
+	public boolean equals(Object o)
+	{
+		if(o instanceof Ukladanie_planu_4dni)
+		{
+			if(((Ukladanie_planu_4dni)o).getSposob().equals(sposob)&& ((Ukladanie_planu_4dni)o).getDzien_wolny()==dzien_wolny)
+				return true;
+		}
+		return false;
+				
+	}
 }

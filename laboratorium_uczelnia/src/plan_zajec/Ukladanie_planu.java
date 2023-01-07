@@ -2,22 +2,19 @@ package plan_zajec;
 
 import main.*;
 import obserwator.Observer;
-
+import java.io.Serializable;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.FileSystem;
+import java.nio.*;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
-import java.nio.file.WatchEvent.Kind;
-import java.nio.file.WatchEvent.Modifier;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 
-public class Ukladanie_planu implements Observer{
+public class Ukladanie_planu implements Observer, Serializable{
 
+	private static final long serialVersionUID = 5041865420909438099L;
+	
 	private Sposob_ukladania_planu sposob;
 	Uczelnia uczelnia;
 	
@@ -55,6 +52,7 @@ public class Ukladanie_planu implements Observer{
 	public ArrayList<Plan> uloz_plany()
 	{
 		return getSposob().uloz_plany(uczelnia);
+		
 	}
 	
 	public void wypisz_plany(ArrayList<Plan> plany)
@@ -64,6 +62,14 @@ public class Ukladanie_planu implements Observer{
 	
 	public void eksportuj_plany(ArrayList<Plan> plany)
 	{
+		for(int i=1;i<100;i++)
+		{
+			try {
+				Files.deleteIfExists(Paths.get("C:/Users/mateu/git/Lab_Java_University_project/laboratorium_uczelnia/Plany_zajec/Sala nr "+i+".txt"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		plany.forEach((n)-> n.eksportuj_plan(n.getNazwa()));
 	}
 	/*

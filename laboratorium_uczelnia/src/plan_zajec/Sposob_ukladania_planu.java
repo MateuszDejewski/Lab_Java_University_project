@@ -10,4 +10,6 @@ public interface Sposob_ukladania_planu {
 	
 	public ArrayList<Plan> uloz_plany(Uczelnia u);
 	public Plan uloz_plan(List<Kurs> kursy,String nazwa);
+	
+	
 }

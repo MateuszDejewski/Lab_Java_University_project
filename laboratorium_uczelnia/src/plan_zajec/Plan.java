@@ -161,7 +161,7 @@ public class Plan {
 	
 	public boolean eksportuj_plan(String nazwa) 
 	{
-		try(PrintWriter wypisz=new PrintWriter(new FileWriter(new File(nazwa+".txt"))))
+		try(PrintWriter wypisz=new PrintWriter(new FileWriter(new File("C:/Users/mateu/git/Lab_Java_University_project/laboratorium_uczelnia/Plany_zajec/"+nazwa+".txt"))))
 		{
 		wypisz.println(nazwa);
 		wypisz.print("                  ");
@@ -181,6 +181,7 @@ public class Plan {
 			}
 		}
 		wypisz.println("\n");
+		
 		}catch (Exception e) {
 			return false;
 		}

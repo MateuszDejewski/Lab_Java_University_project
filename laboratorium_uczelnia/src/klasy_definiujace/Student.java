@@ -57,8 +57,11 @@ public class Student extends Osoba{
 		return rok_studiow;
 	}
 
-	public void setRok_studiow(int rok_studiow) {
-		this.rok_studiow = rok_studiow;
+	public void setRok_studiow(int rok_studiow) throws IllegalArgumentException {
+		if(rok_studiow<=0||rok_studiow>10)
+			throw new IllegalArgumentException("rok studiow");
+		else
+			this.rok_studiow = rok_studiow;
 	}
 
 	public ArrayList<Kurs> getKursy() {
