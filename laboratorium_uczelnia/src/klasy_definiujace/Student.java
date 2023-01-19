@@ -74,7 +74,14 @@ public class Student extends Osoba{
 	
 	public void add_kurs(Kurs k)
 	{
-		kursy.add(k);
+		if(k!=null)
+			kursy.add(k);
+	}
+	
+	public void remove_kurs(Kurs k)
+	{
+		if(k!=null)
+			kursy.remove(k);
 	}
 	
 	public boolean isErasmus() {
@@ -138,4 +145,15 @@ public class Student extends Osoba{
 		return opis;
 	}
 
+	@Override
+	public int hashCode() {
+		return numer_indeksu.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(o instanceof Student)
+			return ((Student) o).getNumer_indeksu().equals(numer_indeksu);
+		return false;
+	}
 }

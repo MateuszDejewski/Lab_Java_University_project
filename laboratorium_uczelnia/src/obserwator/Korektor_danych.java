@@ -24,15 +24,16 @@ public class Korektor_danych implements Observer{
 
 	public void sprawdz_kursy_u_studentow()
 	{
-		ArrayList<Kurs> kursy=uczelnia.getWszystkie_kursy();
+		ArrayList<Kurs> wszystkie_kursy=uczelnia.getWszystkie_kursy();
 		ArrayList<Student> studenci =Wyszukiwanie_osob.wyszukaj_wszystkich_studentow(uczelnia.getLudzie());
 		
 		for(Student s:studenci)
 		{
-			for(Kurs k: s.getKursy())
+			ArrayList<Kurs> kursy=(ArrayList<Kurs>) s.getKursy().clone();
+			for(Kurs k: kursy)
 			{
-				if(!kursy.contains(k))
-					uczelnia.usun_kurs(k);
+				if(!wszystkie_kursy.contains(k))
+					s.remove_kurs(k);
 			}
 		}
 	}
@@ -42,7 +43,7 @@ public class Korektor_danych implements Observer{
 	@Override
 	public void update() {
 		sprawdz_kursy_u_studentow();
-		System.out.print("*\nDokonano weryfikacji danych\n*\n");
+		//System.out.print("*\nDokonano weryfikacji danych\n*\n");
 	}
 
 }

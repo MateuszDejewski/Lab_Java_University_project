@@ -76,7 +76,7 @@ public abstract class Osoba implements Serializable{
 	
 	public boolean equals (Object o)
 	{
-		if(o instanceof Osoba && ((Osoba)o).getPesel()==pesel)
+		if(o instanceof Osoba && ((Osoba)o).getPesel().equals(pesel))
 			return true;
 		else {
 			return false;
@@ -88,4 +88,8 @@ public abstract class Osoba implements Serializable{
 		return imie+" "+nazwisko+" "+pesel+" "+plec+" "+wiek+" lat";
 	}
 	
+	@Override
+	public int hashCode() {
+		return pesel.hashCode();
+	}
 }

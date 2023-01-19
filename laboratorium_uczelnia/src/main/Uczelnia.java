@@ -2,6 +2,7 @@ package main;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import gui.GUI_menu;
 import klasy_definiujace.*;
@@ -91,7 +92,7 @@ public class Uczelnia implements Serializable, Observable  {
 		}
 	}
 	
-	public void usun_osoby(ArrayList<Osoba> o)
+	public void usun_osoby(ArrayList<? extends Osoba> o)
 	{
 		if(o!=null)	{
 		ludzie.removeAll(o);
@@ -106,7 +107,7 @@ public class Uczelnia implements Serializable, Observable  {
 		notifyObservers();
 		}
 	}
-	
+		
 	public void usun_kurs(Kurs k)
 	{
 		if(k!=null) {
@@ -123,6 +124,12 @@ public class Uczelnia implements Serializable, Observable  {
 		}
 	}
 	
+	public <E extends Osoba> ArrayList<E> bez_duplikatow(ArrayList<E> lista)
+	{
+		HashSet<E> zbior_elementow=new HashSet<E>(lista);
+		return new ArrayList<E>(zbior_elementow);
+	}
+	
 	public static void main(String[] args) {
 		
 		Uczelnia test= new Uczelnia(3);
@@ -130,6 +137,7 @@ public class Uczelnia implements Serializable, Observable  {
 		gui.utworz();
 		
 		/*
+		
 		
 		for(int i=0;i<7;i++)
 		{

@@ -4,8 +4,6 @@ import main.*;
 import obserwator.Observer;
 import java.io.Serializable;
 import java.io.IOException;
-import java.net.URI;
-import java.nio.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -97,7 +95,7 @@ public class Ukladanie_planu implements Observer, Serializable{
 
 	@Override
 	public void update() {
-		System.out.println("*\nNastąpiła aktualizacja stanu uczelni i zmiana planu zajęć\nNowy paln znajduje się w plikach tekstowych\n*");
+		//System.out.println("*\nNastąpiła aktualizacja stanu uczelni i zmiana planu zajęć\nNowy paln znajduje się w plikach tekstowych\n*");
 		eksportuj_plany(uloz_plany());
 		
 	}
